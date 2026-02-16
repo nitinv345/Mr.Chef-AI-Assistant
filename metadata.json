@@ -1,0 +1,7 @@
+{
+  "name": "Mr. Chef AI Assistant",
+  "description": "An AI-powered recipe assistant and generator.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
