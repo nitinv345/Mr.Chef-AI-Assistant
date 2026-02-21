@@ -27,6 +27,7 @@ export const generateRecipeFromIngredients = async (
     
     The recipe should be safe for the allergies listed.
     Provide a creative title, a list of additional basic ingredients if needed, step-by-step instructions, and serving size.
+    Difficulty must be one of: "Easy", "Medium", "Hard".
   `;
 
   try {
@@ -42,8 +43,12 @@ export const generateRecipeFromIngredients = async (
             ingredients: { type: Type.ARRAY, items: { type: Type.STRING } },
             instructions: { type: Type.ARRAY, items: { type: Type.STRING } },
             servings: { type: Type.NUMBER },
+            description: { type: Type.STRING },
+            time: { type: Type.STRING },
+            difficulty: { type: Type.STRING },
+            calories: { type: Type.NUMBER },
           },
-          required: ["title", "ingredients", "instructions", "servings"]
+          required: ["title", "ingredients", "instructions", "servings", "description", "time", "difficulty", "calories"]
         }
       }
     });

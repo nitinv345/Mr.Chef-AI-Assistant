@@ -40,7 +40,11 @@ const Favorites: React.FC<FavoritesProps> = ({ recipes, onRecipeClick }) => {
             
             <div className="flex-1 flex flex-col justify-center">
                 <h3 className="font-bold text-gray-800 mb-1 line-clamp-2">{recipe.title}</h3>
-                <div className="flex items-center gap-3 mt-2">
+                <div className="text-[10px] text-gray-400 mb-2 flex gap-2">
+                    <span>{recipe.time}</span>
+                    <span className="text-orange-500 font-semibold">{recipe.difficulty}</span>
+                </div>
+                <div className="flex items-center gap-3 mt-1">
                     <span className="flex items-center text-xs text-red-500 bg-red-50 px-2 py-1 rounded-full">
                         <Heart size={10} fill="currentColor" className="mr-1" />
                         {recipe.likesCount + 1}

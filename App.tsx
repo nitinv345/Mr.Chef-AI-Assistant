@@ -16,18 +16,44 @@ const App: React.FC = () => {
 
   // Load persistence
   useEffect(() => {
-    const savedRecipes = localStorage.getItem('the_chief_recipes');
+    const fetchRecipes = async () => {
+      try {
+        const response = await fetch('/api/recipes');
+        if (response.ok) {
+          const data = await response.json();
+          if (data.length > 0) {
+            setRecipes(data);
+          } else {
+            // Seed initial recipes if DB is empty
+            const seedPromises = INITIAL_RECIPES.map(recipe => 
+              fetch('/api/recipes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(recipe)
+              })
+            );
+            await Promise.all(seedPromises);
+            
+            // Re-fetch to confirm
+            const retryResponse = await fetch('/api/recipes');
+            if (retryResponse.ok) {
+              const retryData = await retryResponse.json();
+              setRecipes(retryData.length > 0 ? retryData : INITIAL_RECIPES);
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch recipes:", err);
+      }
+    };
+
     const savedSettings = localStorage.getItem('the_chief_settings');
     
-    if (savedRecipes) setRecipes(JSON.parse(savedRecipes));
+    fetchRecipes();
     if (savedSettings) setUserSettings(JSON.parse(savedSettings));
   }, []);
 
-  // Save persistence
-  useEffect(() => {
-    localStorage.setItem('the_chief_recipes', JSON.stringify(recipes));
-  }, [recipes]);
-
+  // Save persistence (Settings still in localStorage for now, recipes in DB)
   useEffect(() => {
     localStorage.setItem('the_chief_settings', JSON.stringify(userSettings));
   }, [userSettings]);
@@ -37,22 +63,52 @@ const App: React.FC = () => {
     setCurrentView('RECIPE_DETAIL');
   };
 
-  const handleToggleLike = (id: string) => {
+  const handleToggleLike = async (id: string) => {
+    const recipe = recipes.find(r => r.id === id);
+    if (!recipe) return;
+
+    const updatedStatus = !recipe.isLiked;
+    
     setRecipes(prev => prev.map(r => {
         if (r.id === id) {
-            return { ...r, isLiked: !r.isLiked };
+            return { ...r, isLiked: updatedStatus };
         }
         return r;
     }));
+
+    try {
+      await fetch(`/api/recipes/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isLiked: updatedStatus })
+      });
+    } catch (err) {
+      console.error("Failed to update like status:", err);
+    }
   };
 
-  const handleToggleReminder = (id: string) => {
+  const handleToggleReminder = async (id: string) => {
+    const recipe = recipes.find(r => r.id === id);
+    if (!recipe) return;
+
+    const updatedStatus = !recipe.hasReminder;
+
     setRecipes(prev => prev.map(r => {
         if (r.id === id) {
-            return { ...r, hasReminder: !r.hasReminder };
+            return { ...r, hasReminder: updatedStatus };
         }
         return r;
     }));
+
+    try {
+      await fetch(`/api/recipes/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ hasReminder: updatedStatus })
+      });
+    } catch (err) {
+      console.error("Failed to update reminder status:", err);
+    }
   };
 
   const renderView = () => {

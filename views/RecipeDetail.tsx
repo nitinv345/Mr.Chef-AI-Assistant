@@ -91,7 +91,27 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, onBack }) => {
         <ArrowLeft className="mr-2" size={20} /> Back to Home
       </button>
 
-      <h1 className="text-3xl font-bold text-gray-900 mb-4">{recipe.title}</h1>
+      <h1 className="text-3xl font-bold text-gray-900 mb-2">{recipe.title}</h1>
+      <p className="text-gray-600 mb-6 leading-relaxed">{recipe.description}</p>
+
+      <div className="flex flex-wrap gap-4 mb-8">
+        <div className="flex items-center space-x-2 bg-gray-50 px-4 py-2 rounded-lg border border-gray-100">
+          <Clock size={18} className="text-orange-500" />
+          <span className="text-sm font-medium text-gray-700">{recipe.time}</span>
+        </div>
+        <div className="flex items-center space-x-2 bg-gray-50 px-4 py-2 rounded-lg border border-gray-100">
+          <Users size={18} className="text-orange-500" />
+          <span className="text-sm font-medium text-gray-700">{recipe.servings} Servings</span>
+        </div>
+        <div className="flex items-center space-x-2 bg-gray-50 px-4 py-2 rounded-lg border border-gray-100">
+          <span className="text-sm font-bold text-orange-500">{recipe.difficulty}</span>
+          <span className="text-sm font-medium text-gray-700">Level</span>
+        </div>
+        <div className="flex items-center space-x-2 bg-gray-50 px-4 py-2 rounded-lg border border-gray-100">
+          <span className="text-sm font-bold text-orange-500">{recipe.calories}</span>
+          <span className="text-sm font-medium text-gray-700">kcal</span>
+        </div>
+      </div>
       
       {/* Video Player */}
       <div className="relative aspect-video bg-black rounded-xl overflow-hidden shadow-lg mb-8 group">

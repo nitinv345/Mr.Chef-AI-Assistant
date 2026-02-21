@@ -54,10 +54,49 @@ const RecipeMaker: React.FC<RecipeMakerProps> = ({ userSettings }) => {
     setLoading(true);
     setGeneratedRecipe(null);
     
-    const recipe = await generateRecipeFromIngredients(selectedIngredients, dietType, userSettings);
+    const recipeData = await generateRecipeFromIngredients(selectedIngredients, dietType, userSettings);
     
-    if (recipe) {
-        setGeneratedRecipe(recipe);
+    if (recipeData) {
+        const normalizeDifficulty = (diff: string): "Easy" | "Medium" | "Hard" => {
+            const d = diff.toLowerCase();
+            if (d.includes('easy')) return 'Easy';
+            if (d.includes('hard')) return 'Hard';
+            return 'Medium';
+        };
+
+        const newRecipe: Recipe = {
+            id: Math.random().toString(36).substr(2, 9),
+            title: recipeData.title || 'Untitled Recipe',
+            image: `https://picsum.photos/seed/${Math.random()}/800/600`,
+            time: recipeData.time || '30 mins',
+            difficulty: normalizeDifficulty(recipeData.difficulty || 'Medium'),
+            rating: 4.5,
+            calories: recipeData.calories || 350,
+            description: recipeData.description || '',
+            ingredients: recipeData.ingredients || [],
+            instructions: recipeData.instructions || [],
+            servings: recipeData.servings || 2,
+            isLiked: false,
+            hasReminder: false,
+            likesCount: 0
+        };
+
+        try {
+            const response = await fetch('/api/recipes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newRecipe)
+            });
+            if (response.ok) {
+                setGeneratedRecipe(newRecipe);
+            } else {
+                const errorData = await response.json();
+                setError(`Failed to save: ${errorData.message || "Unknown error"}`);
+            }
+        } catch (err) {
+            console.error("Error saving recipe:", err);
+            setError("Error connecting to backend.");
+        }
     } else {
         setError("Could not generate recipe. Please check API key or try again.");
     }

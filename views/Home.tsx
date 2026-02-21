@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Mic, Heart, Bell } from 'lucide-react';
+import { Search, Mic, Heart, Bell, Clock } from 'lucide-react';
 import { Recipe } from '../types';
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
 
@@ -100,6 +100,19 @@ const Home: React.FC<HomeProps> = ({ recipes, onRecipeClick, onToggleLike, onTog
                 >
                     {recipe.title}
                 </h3>
+              </div>
+
+              <div className="flex items-center space-x-4 text-xs text-gray-500 mb-4">
+                <div className="flex items-center">
+                  <Clock size={14} className="mr-1" />
+                  {recipe.time}
+                </div>
+                <div className="font-semibold text-orange-600">
+                  {recipe.difficulty}
+                </div>
+                <div>
+                  {recipe.calories} kcal
+                </div>
               </div>
               
               <div className="flex items-center justify-between mt-4">

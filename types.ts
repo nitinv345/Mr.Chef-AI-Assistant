@@ -9,7 +9,12 @@ export interface Recipe {
   id: string;
   title: string;
   image: string;
-  videoUrl: string;
+  videoUrl?: string;
+  time: string;
+  difficulty: 'Easy' | 'Medium' | 'Hard';
+  rating: number;
+  calories: number;
+  description: string;
   ingredients: string[];
   instructions: string[];
   servings: number;
