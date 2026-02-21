@@ -117,6 +117,7 @@ const App: React.FC = () => {
         return (
           <Home 
             recipes={recipes} 
+            userSettings={userSettings}
             onRecipeClick={handleRecipeClick}
             onToggleLike={handleToggleLike}
             onToggleReminder={handleToggleReminder}
@@ -126,7 +127,7 @@ const App: React.FC = () => {
         if (!activeRecipe) return <div onClick={() => setCurrentView('HOME')}>Error: No recipe selected. Click to go home.</div>;
         return <RecipeDetail recipe={activeRecipe} onBack={() => setCurrentView('HOME')} />;
       case 'FAVOURITE':
-        return <Favorites recipes={recipes} onRecipeClick={handleRecipeClick} />;
+        return <Favorites recipes={recipes} userSettings={userSettings} onRecipeClick={handleRecipeClick} />;
       case 'MAKER':
         return <RecipeMaker userSettings={userSettings} />;
       case 'SETTINGS':

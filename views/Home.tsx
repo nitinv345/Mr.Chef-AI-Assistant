@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Mic, Heart, Bell, Clock } from 'lucide-react';
-import { Recipe } from '../types';
+import { Recipe, UserSettings } from '../types';
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
 
 interface HomeProps {
   recipes: Recipe[];
+  userSettings: UserSettings;
   onRecipeClick: (recipe: Recipe) => void;
   onToggleLike: (id: string) => void;
   onToggleReminder: (id: string) => void;
 }
 
-const Home: React.FC<HomeProps> = ({ recipes, onRecipeClick, onToggleLike, onToggleReminder }) => {
+const Home: React.FC<HomeProps> = ({ recipes, userSettings, onRecipeClick, onToggleLike, onToggleReminder }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const { isListening, transcript, startListening, setTranscript } = useSpeechRecognition();
   const [filteredRecipes, setFilteredRecipes] = useState<Recipe[]>(recipes);
@@ -40,6 +41,17 @@ const Home: React.FC<HomeProps> = ({ recipes, onRecipeClick, onToggleLike, onTog
 
   return (
     <div className="pt-20 pb-24 px-4 max-w-7xl mx-auto min-h-screen">
+      
+      {/* Header with DP */}
+      <div className="flex justify-between items-center mb-8">
+        <div>
+            <h2 className="text-3xl font-bold text-gray-900">Hello, {userSettings.name.split(' ')[0]}!</h2>
+            <p className="text-gray-500">What are we cooking today?</p>
+        </div>
+        <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-orange-500 shadow-lg bg-white transition-transform hover:scale-110 hover:rotate-3">
+            <img src={userSettings.profilePicture} alt="Profile" className="w-full h-full object-cover animate-bounce-subtle" />
+        </div>
+      </div>
       
       {/* Search Bar */}
       <div className="mb-8 relative max-w-2xl mx-auto">

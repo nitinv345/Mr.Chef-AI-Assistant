@@ -10,7 +10,9 @@ interface RecipeDetailProps {
 
 const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, onBack }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const { isListening, transcript, startListening, setTranscript } = useSpeechRecognition();
+  const [lang, setLang] = useState('en-US');
+  const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+  const { isListening, transcript, stopListening, startListening, setTranscript, isWakeupWordDetected, setIsWakeupWordDetected } = useSpeechRecognition({ continuous: true, lang });
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [feedback, setFeedback] = useState('');
@@ -22,9 +24,8 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, onBack }) => {
     const cmd = transcript.toLowerCase();
     let actionTaken = false;
 
+    // English Commands
     if (cmd.includes('play from')) {
-        // Parse time like "02:30" or "2 minutes 30 seconds"
-        // Simple parser for "play from MM:SS"
         const timeMatch = cmd.match(/(\d{1,2})[:\s](\d{2})/);
         if (timeMatch) {
             const mins = parseInt(timeMatch[1]);
@@ -36,42 +37,91 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, onBack }) => {
             setFeedback(`Playing from ${mins}:${secs}`);
             actionTaken = true;
         }
-    } else if (cmd.includes('play')) {
+    } else if (cmd.includes('play at 2x') || cmd.includes('play 2x') || cmd.includes('वेग वाढवा')) {
+        videoRef.current.playbackRate = 2.0;
         videoRef.current.play();
         setIsPlaying(true);
-        setFeedback('Playing');
+        setFeedback(lang === 'mr-IN' ? 'वेग २ पट' : 'Playing at 2x');
         actionTaken = true;
-    } else if (cmd.includes('stop') || cmd.includes('pause')) {
+    } else if (cmd.includes('play at 1.5x') || cmd.includes('play 1.5x')) {
+        videoRef.current.playbackRate = 1.5;
+        videoRef.current.play();
+        setIsPlaying(true);
+        setFeedback('Playing at 1.5x');
+        actionTaken = true;
+    } else if (cmd.includes('play at normal') || cmd.includes('normal speed') || cmd.includes('सामान्य वेग') || cmd.includes('नॉर्मल')) {
+        videoRef.current.playbackRate = 1.0;
+        videoRef.current.play();
+        setIsPlaying(true);
+        setFeedback(lang === 'mr-IN' ? 'सामान्य वेग' : 'Normal speed');
+        actionTaken = true;
+    } else if (cmd.includes('play') || cmd.includes('सुरू करा') || cmd.includes('प्ले') || cmd.includes('चालू करा')) {
+        videoRef.current.play();
+        setIsPlaying(true);
+        setFeedback(lang === 'mr-IN' ? 'सुरू झाले' : 'Playing');
+        actionTaken = true;
+    } else if (cmd.includes('stop') || cmd.includes('pause') || cmd.includes('थांबवा') || cmd.includes('पॉज') || cmd.includes('बंद करा')) {
         videoRef.current.pause();
         setIsPlaying(false);
-        setFeedback('Paused');
+        setFeedback(lang === 'mr-IN' ? 'थांबवले' : 'Paused');
         actionTaken = true;
-    } else if (cmd.includes('mute') && !cmd.includes('unmute')) {
+    } else if ((cmd.includes('mute') && !cmd.includes('unmute')) || cmd.includes('आवाज बंद') || cmd.includes('म्यूट')) {
         videoRef.current.muted = true;
         setIsMuted(true);
-        setFeedback('Muted');
+        setFeedback(lang === 'mr-IN' ? 'आवाज बंद' : 'Muted');
         actionTaken = true;
-    } else if (cmd.includes('unmute')) {
+    } else if (cmd.includes('unmute') || cmd.includes('आवाज सुरू') || cmd.includes('अनम्यूट')) {
         videoRef.current.muted = false;
         setIsMuted(false);
-        setFeedback('Unmuted');
+        setFeedback(lang === 'mr-IN' ? 'आवाज सुरू' : 'Unmuted');
         actionTaken = true;
-    } else if (cmd.includes('forward')) {
+    } else if (cmd.includes('forward') || cmd.includes('पुढे') || cmd.includes('पुढचा')) {
         videoRef.current.currentTime += 10;
-        setFeedback('Forward 10s');
+        setFeedback(lang === 'mr-IN' ? '१० सेकंद पुढे' : 'Forward 10s');
         actionTaken = true;
-    } else if (cmd.includes('backward') || cmd.includes('rewind')) {
+    } else if (cmd.includes('backward') || cmd.includes('rewind') || cmd.includes('मागे') || cmd.includes('मागचा')) {
         videoRef.current.currentTime -= 10;
-        setFeedback('Backward 10s');
+        setFeedback(lang === 'mr-IN' ? '१० सेकंद मागे' : 'Backward 10s');
+        actionTaken = true;
+    } else if (cmd.includes('stop listening') || cmd.includes('आवाज नियंत्रण बंद करा') || cmd.includes('आवाज बंद करा')) {
+        stopListening();
+        setFeedback(lang === 'mr-IN' ? 'आवाज नियंत्रण बंद' : 'Voice control stopped');
         actionTaken = true;
     }
 
     if (actionTaken) {
         setTranscript(''); // Clear
+        setIsWakeupWordDetected(false);
         setTimeout(() => setFeedback(''), 2000);
     }
 
-  }, [transcript, setTranscript]);
+  }, [transcript, setTranscript, setIsWakeupWordDetected, lang]);
+
+  // Auto-start listening for wakeup word
+  useEffect(() => {
+    // We still try to auto-start, but browsers might block it
+    startListening();
+    return () => {
+        stopListening();
+    };
+  }, [startListening, stopListening]);
+
+  const [micError, setMicError] = useState(false);
+  
+  // Handle permission errors
+  useEffect(() => {
+    const checkPermission = async () => {
+        try {
+            const result = await navigator.permissions.query({ name: 'microphone' as any });
+            if (result.state === 'denied') {
+                setMicError(true);
+            }
+        } catch (e) {
+            // Ignore
+        }
+    };
+    checkPermission();
+  }, []);
 
   const togglePlay = () => {
     if (videoRef.current) {
@@ -115,32 +165,85 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, onBack }) => {
       
       {/* Video Player */}
       <div className="relative aspect-video bg-black rounded-xl overflow-hidden shadow-lg mb-8 group">
-        <video 
-            ref={videoRef}
-            src={recipe.videoUrl}
-            className="w-full h-full object-cover"
-            onClick={togglePlay}
-            onPlay={() => setIsPlaying(true)}
-            onPause={() => setIsPlaying(false)}
-        />
-        
-        {/* Controls Overlay */}
-        <div className={`absolute inset-0 bg-black/40 flex items-center justify-center transition-opacity duration-300 ${isPlaying ? 'opacity-0 group-hover:opacity-100' : 'opacity-100'}`}>
-            <button onClick={togglePlay} className="p-4 bg-white/20 backdrop-blur-sm rounded-full text-white hover:bg-white/30 transition-all transform hover:scale-110">
-                {isPlaying ? <Pause size={32} /> : <Play size={32} fill="currentColor" />}
-            </button>
-        </div>
+        {recipe.videoUrl ? (
+          <>
+            <video 
+                ref={videoRef}
+                src={recipe.videoUrl}
+                className="w-full h-full object-cover"
+                onClick={togglePlay}
+                onPlay={() => setIsPlaying(true)}
+                onPause={() => setIsPlaying(false)}
+            />
+            
+            {/* Controls Overlay */}
+            <div className={`absolute inset-0 bg-black/40 flex items-center justify-center transition-opacity duration-300 ${isPlaying ? 'opacity-0 group-hover:opacity-100' : 'opacity-100'}`}>
+                <button onClick={togglePlay} className="p-4 bg-white/20 backdrop-blur-sm rounded-full text-white hover:bg-white/30 transition-all transform hover:scale-110">
+                    {isPlaying ? <Pause size={32} /> : <Play size={32} fill="currentColor" />}
+                </button>
+            </div>
+          </>
+        ) : (
+          <div className="w-full h-full flex flex-col items-center justify-center text-white bg-gray-900 p-6 text-center">
+            <Play size={48} className="text-gray-700 mb-4" />
+            <p className="text-lg font-bold">No Video Available</p>
+            <p className="text-sm text-gray-500 mt-2">This recipe was generated by AI and doesn't have a video tutorial yet.</p>
+          </div>
+        )}
 
         {/* Voice Control Indicator */}
-        <div className="absolute top-4 right-4 flex flex-col items-end">
+        <div className="absolute top-4 right-4 flex flex-col items-end space-y-2">
+             <div className="flex items-center space-x-2 mb-2">
+                <button 
+                    onClick={() => setLang('en-US')}
+                    className={`px-2 py-1 text-[10px] font-bold rounded border transition-all ${lang === 'en-US' ? 'bg-orange-500 text-white border-orange-500' : 'bg-black/30 text-white border-white/20'}`}
+                >
+                    EN
+                </button>
+                <button 
+                    onClick={() => setLang('mr-IN')}
+                    className={`px-2 py-1 text-[10px] font-bold rounded border transition-all ${lang === 'mr-IN' ? 'bg-orange-500 text-white border-orange-500' : 'bg-black/30 text-white border-white/20'}`}
+                >
+                    मराठी
+                </button>
+             </div>
              <button 
                 onClick={startListening}
-                className={`p-2 rounded-full bg-black/50 text-white hover:bg-orange-500 transition-colors ${isListening ? 'animate-pulse bg-red-500' : ''}`}
-                title="Voice Control"
+                className={`flex items-center space-x-2 px-4 py-2 rounded-full backdrop-blur-md border transition-all ${
+                    isListening 
+                    ? 'bg-orange-500/90 text-white border-orange-400 shadow-lg scale-105' 
+                    : 'bg-black/50 text-white border-white/20 hover:bg-black/70'
+                }`}
             >
-                {isListening ? "Listening..." : "Voice Control"}
+                <div className={`w-2 h-2 rounded-full ${isListening ? 'bg-white animate-pulse' : 'bg-gray-400'}`} />
+                <span className="text-xs font-bold uppercase tracking-wider">
+                    {isListening ? (isWakeupWordDetected ? (lang === 'mr-IN' ? 'ऐकत आहे...' : 'Listening...') : (lang === 'mr-IN' ? 'बोला "हे"' : 'Say "Hey"')) : (lang === 'mr-IN' ? 'आवाज सुरू करा' : 'Enable Voice')}
+                </span>
             </button>
-            {feedback && <div className="mt-2 px-3 py-1 bg-black/70 text-white text-xs rounded-lg backdrop-blur-md">{feedback}</div>}
+            
+            {micError && (
+                <div className="px-3 py-2 bg-red-500 text-white text-[10px] font-bold rounded-lg shadow-lg max-w-[150px] text-center">
+                    Mic Access Denied. Please enable it in your browser settings.
+                </div>
+            )}
+
+            {!SpeechRecognition && (
+                <div className="px-3 py-2 bg-gray-500 text-white text-[10px] font-bold rounded-lg shadow-lg max-w-[150px] text-center">
+                    Speech Recognition not supported in this browser.
+                </div>
+            )}
+
+            {feedback && (
+                <div className="px-4 py-2 bg-white text-orange-600 text-sm font-black rounded-xl shadow-2xl animate-bounce border-2 border-orange-500">
+                    {feedback}
+                </div>
+            )}
+            
+            {isWakeupWordDetected && !feedback && (
+                <div className="px-3 py-1 bg-green-500 text-white text-[10px] font-bold rounded-lg animate-pulse">
+                    Wakeup Word Detected!
+                </div>
+            )}
         </div>
       </div>
 

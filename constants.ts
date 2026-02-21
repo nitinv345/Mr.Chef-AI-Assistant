@@ -1,22 +1,22 @@
 import { Recipe, UserSettings } from './types';
 
 export const INITIAL_SETTINGS: UserSettings = {
-  name: 'Chef User',
-  profilePicture: 'https://picsum.photos/200',
+  name: 'Prasad',
+  profilePicture: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Prasad&backgroundColor=ffdfbf&top=shortHair&hairColor=black&facialHair=moustacheMagnum',
   language: 'English',
   dietType: 'Non-Veg',
   allergies: [],
-  cuisinePreferences: ['Indian', 'Italian'],
+  cuisinePreferences: ['Indian'],
   skillLevel: 'Intermediate',
   notifications: true,
 };
 
-// Mock data for 5 recipes as requested
+// Mock data for recipes
 export const INITIAL_RECIPES: Recipe[] = [
   {
     id: '1',
     title: 'Classic Paneer Butter Masala',
-    image: 'https://picsum.photos/800/600?random=1',
+    image: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&w=800&q=80',
     videoUrl: 'https://media.w3.org/2010/05/sintel/trailer_hd.mp4',
     time: '30 mins',
     difficulty: 'Medium',
@@ -39,8 +39,8 @@ export const INITIAL_RECIPES: Recipe[] = [
   },
   {
     id: '2',
-    title: 'Spicy Chicken Biryani',
-    image: 'https://picsum.photos/800/600?random=2',
+    title: 'Hyderabadi Chicken Biryani',
+    image: 'https://images.unsplash.com/photo-1563379091339-03b21bc4a4f8?auto=format&fit=crop&w=800&q=80',
     videoUrl: 'https://media.w3.org/2010/05/sintel/trailer_hd.mp4',
     time: '45 mins',
     difficulty: 'Hard',
@@ -63,77 +63,87 @@ export const INITIAL_RECIPES: Recipe[] = [
   },
   {
     id: '3',
-    title: 'Creamy Mushroom Pasta',
-    image: 'https://picsum.photos/800/600?random=3',
+    title: 'Dal Makhani (Slow Cooked)',
+    image: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=800&q=80',
     videoUrl: 'https://media.w3.org/2010/05/sintel/trailer_hd.mp4',
-    time: '20 mins',
-    difficulty: 'Easy',
-    rating: 4.6,
-    calories: 400,
-    description: 'A simple yet elegant pasta dish with a creamy mushroom and garlic sauce.',
-    ingredients: ['200g Pasta', '1 cup Mushrooms', '2 cloves Garlic', '1 cup Heavy Cream', 'Parmesan Cheese'],
+    time: '60 mins',
+    difficulty: 'Medium',
+    rating: 4.7,
+    calories: 380,
+    description: 'Black lentils slow-cooked overnight with butter and cream for a velvety texture.',
+    ingredients: ['1 cup Black Urad Dal', '1/4 cup Kidney Beans', '2 tbsp Butter', '1/2 cup Cream', 'Ginger-Garlic Paste'],
     instructions: [
-      'Boil pasta al dente.',
-      'Sauté garlic and mushrooms in olive oil.',
-      'Add cream and simmer until slightly thickened.',
-      'Toss pasta in sauce and finish with parmesan.'
-    ],
-    servings: 2,
-    isLiked: false,
-    hasReminder: false,
-    likesCount: 85,
-    tags: ['Veg', 'Italian']
-  },
-  {
-    id: '4',
-    title: 'Vegan Tofu Stir Fry',
-    image: 'https://picsum.photos/800/600?random=4',
-    videoUrl: 'https://media.w3.org/2010/05/sintel/trailer_hd.mp4',
-    time: '15 mins',
-    difficulty: 'Easy',
-    rating: 4.4,
-    calories: 300,
-    description: 'Healthy and quick vegan stir fry with crispy tofu and fresh vegetables.',
-    ingredients: ['1 block Tofu', 'Broccoli', 'Bell Peppers', 'Soy Sauce', 'Ginger', 'Sesame Oil'],
-    instructions: [
-      'Press tofu and cut into cubes.',
-      'Pan fry tofu until golden.',
-      'Stir fry vegetables in sesame oil.',
-      'Mix soy sauce, ginger, and garlic.',
-      'Combine everything and toss well.'
+      'Soak lentils and beans overnight.',
+      'Pressure cook until very soft.',
+      'Simmer with tomato puree and spices for 30 mins.',
+      'Finish with butter and cream.'
     ],
     servings: 3,
     isLiked: false,
     hasReminder: false,
-    likesCount: 45,
-    tags: ['Vegan', 'Asian']
+    likesCount: 210,
+    tags: ['Veg', 'Indian']
   },
   {
-    id: '5',
-    title: 'Chocolate Lava Cake',
-    image: 'https://picsum.photos/800/600?random=5',
+    id: '4',
+    title: 'Goan Fish Curry',
+    image: 'https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?auto=format&fit=crop&w=800&q=80',
     videoUrl: 'https://media.w3.org/2010/05/sintel/trailer_hd.mp4',
     time: '25 mins',
-    difficulty: 'Medium',
-    rating: 5.0,
-    calories: 550,
-    description: 'Indulgent chocolate cakes with a gooey, molten center.',
-    ingredients: ['100g Dark Chocolate', '50g Butter', '2 Eggs', '2 tbsp Sugar', '1 tbsp Flour'],
+    difficulty: 'Easy',
+    rating: 4.5,
+    calories: 420,
+    description: 'A tangy and spicy coconut-based fish curry from the coast of Goa.',
+    ingredients: ['500g Fish Fillets', '1 cup Coconut Milk', 'Tamarind Paste', 'Kashmiri Chilies', 'Mustard Seeds'],
     instructions: [
-      'Melt chocolate and butter together.',
-      'Whisk eggs and sugar until pale.',
-      'Fold in chocolate mixture and flour.',
-      'Pour into greased ramekins.',
-      'Bake at 200°C for 10-12 minutes.'
+      'Grind coconut, chilies, and tamarind into a paste.',
+      'Sauté mustard seeds and curry leaves.',
+      'Add the paste and cook for 5 mins.',
+      'Add fish and simmer until cooked.'
     ],
     servings: 2,
     isLiked: false,
     hasReminder: false,
-    likesCount: 890,
+    likesCount: 155,
+    tags: ['Non-Veg', 'Seafood']
+  },
+  {
+    id: '5',
+    title: 'Gulab Jamun (Soft & Juicy)',
+    image: 'https://images.unsplash.com/photo-1589119908995-c6837fa14848?auto=format&fit=crop&w=800&q=80',
+    videoUrl: 'https://media.w3.org/2010/05/sintel/trailer_hd.mp4',
+    time: '40 mins',
+    difficulty: 'Medium',
+    rating: 5.0,
+    calories: 320,
+    description: 'Deep-fried milk solids dumplings soaked in rose-scented sugar syrup.',
+    ingredients: ['1 cup Khoya', '2 tbsp Flour', '1 cup Sugar', 'Cardamom', 'Rose Water'],
+    instructions: [
+      'Knead khoya and flour into a smooth dough.',
+      'Make small balls and deep fry on low heat.',
+      'Prepare sugar syrup with cardamom and rose water.',
+      'Soak the fried balls in warm syrup for 2 hours.'
+    ],
+    servings: 6,
+    isLiked: false,
+    hasReminder: false,
+    likesCount: 540,
     tags: ['Veg', 'Dessert']
   }
 ];
 
-export const VEG_INGREDIENTS = ['Paneer', 'Potato', 'Tomato', 'Onion', 'Spinach', 'Mushroom', 'Cauliflower', 'Peas', 'Carrot'];
-export const SPICES = ['Turmeric', 'Cumin', 'Chili Powder', 'Garam Masala', 'Coriander', 'Salt', 'Pepper'];
-export const MEATS = ['Chicken', 'Mutton', 'Fish', 'Prawns', 'Egg'];
+export const VEG_INGREDIENTS = [
+  'Paneer', 'Potato (Aloo)', 'Tomato', 'Onion', 'Spinach (Palak)', 'Mushroom', 'Cauliflower (Gobi)', 
+  'Peas (Matar)', 'Carrot', 'Lady Finger (Bhindi)', 'Eggplant (Baingan)', 'Bottle Gourd (Lauki)', 
+  'Bitter Gourd (Karela)', 'Capsicum (Shimla Mirch)', 'Cabbage (Patta Gobi)', 'Fenugreek (Methi)',
+  'Radish (Mooli)', 'Pumpkin (Kaddu)', 'Sweet Potato', 'Drumstick', 'Pointed Gourd (Parwal)'
+];
+
+export const SPICES = [
+  'Turmeric (Haldi)', 'Cumin (Jeera)', 'Chili Powder', 'Garam Masala', 'Coriander (Dhania)', 
+  'Salt', 'Black Pepper', 'Cardamom (Elaichi)', 'Cloves (Laung)', 'Cinnamon (Dalchini)', 
+  'Asafoetida (Hing)', 'Mustard Seeds (Rai)', 'Fennel Seeds (Saunf)', 'Kashmiri Mirch',
+  'Amchur (Mango Powder)', 'Kasuri Methi', 'Bay Leaf (Tej Patta)', 'Star Anise'
+];
+
+export const MEATS = ['Chicken', 'Mutton', 'Fish', 'Prawns', 'Egg', 'Crab'];

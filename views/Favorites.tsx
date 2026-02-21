@@ -1,13 +1,14 @@
 import React from 'react';
-import { Recipe } from '../types';
+import { Recipe, UserSettings } from '../types';
 import { Play, Heart, Bell } from 'lucide-react';
 
 interface FavoritesProps {
   recipes: Recipe[];
+  userSettings: UserSettings;
   onRecipeClick: (recipe: Recipe) => void;
 }
 
-const Favorites: React.FC<FavoritesProps> = ({ recipes, onRecipeClick }) => {
+const Favorites: React.FC<FavoritesProps> = ({ recipes, userSettings, onRecipeClick }) => {
   const favorites = recipes.filter(r => r.isLiked);
 
   if (favorites.length === 0) {
@@ -22,7 +23,12 @@ const Favorites: React.FC<FavoritesProps> = ({ recipes, onRecipeClick }) => {
 
   return (
     <div className="pt-20 pb-24 px-4 max-w-7xl mx-auto min-h-screen">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Your Favorites</h1>
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold text-gray-900">Your Favorites</h1>
+        <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-orange-500 shadow-lg bg-white transition-transform hover:scale-110 hover:rotate-3">
+            <img src={userSettings.profilePicture} alt="Profile" className="w-full h-full object-cover animate-bounce-subtle" />
+        </div>
+      </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {favorites.map((recipe) => (

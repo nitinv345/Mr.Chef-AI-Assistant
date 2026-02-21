@@ -7,9 +7,19 @@ interface SettingsProps {
   onSave: (newSettings: UserSettings) => void;
 }
 
+const CHEF_OUTFITS = [
+  { id: 'prasad', url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Prasad&backgroundColor=ffdfbf&top=shortHair&hairColor=black&facialHair=moustacheMagnum', label: 'Prasad' },
+  { id: 'nitin', url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Nitin&backgroundColor=c0aede&top=shortHair&hairColor=black&facialHair=beardLight', label: 'Nitin' },
+  { id: 'sarthak', url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarthak&backgroundColor=b6e3f4&top=shortHair&hairColor=black', label: 'Sarthak' },
+  { id: 'rinu', url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Rinu&backgroundColor=ffdfbf&top=longHair&hairColor=black', label: 'Rinu' },
+  { id: 'minu', url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Minu&backgroundColor=c0aede&top=longHair&hairColor=black', label: 'Minu' },
+  { id: 'siddhi', url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Siddhi&backgroundColor=b6e3f4&top=longHair&hairColor=black', label: 'Siddhi' },
+];
+
 const Settings: React.FC<SettingsProps> = ({ settings, onSave }) => {
   const [formData, setFormData] = useState<UserSettings>(settings);
   const [isSaved, setIsSaved] = useState(false);
+  const [showDpDropdown, setShowDpDropdown] = useState(false);
 
   const handleChange = (field: keyof UserSettings, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -34,12 +44,43 @@ const Settings: React.FC<SettingsProps> = ({ settings, onSave }) => {
   return (
     <div className="pt-20 pb-24 px-4 max-w-3xl mx-auto min-h-screen">
       <div className="flex items-center space-x-4 mb-8">
-        <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-orange-500">
-            <img src={formData.profilePicture} alt="Profile" className="w-full h-full object-cover" />
+        <div className="relative group">
+            <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-orange-500 shadow-lg cursor-pointer transition-all hover:scale-110 hover:rotate-3 active:scale-95 bg-white" onClick={() => setShowDpDropdown(!showDpDropdown)}>
+                <img src={formData.profilePicture} alt="Profile" className="w-full h-full object-cover animate-bounce-subtle" />
+                <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span className="text-[10px] text-white font-bold uppercase">Change</span>
+                </div>
+            </div>
+            
+            {showDpDropdown && (
+                <div className="absolute top-full left-0 mt-2 w-72 bg-white rounded-2xl shadow-2xl border border-gray-100 p-4 z-50 animate-in fade-in slide-in-from-top-4">
+                    <div className="text-xs font-bold text-gray-400 uppercase mb-4 px-1 flex justify-between items-center">
+                        <span>Choose Your Avatar</span>
+                        <button onClick={() => setShowDpDropdown(false)} className="text-gray-300 hover:text-gray-500">×</button>
+                    </div>
+                    <div className="grid grid-cols-3 gap-3">
+                        {CHEF_OUTFITS.map(outfit => (
+                            <button 
+                                key={outfit.id}
+                                onClick={() => {
+                                    handleChange('profilePicture', outfit.url);
+                                    setShowDpDropdown(false);
+                                }}
+                                className={`group relative rounded-xl overflow-hidden border-2 transition-all hover:scale-105 ${formData.profilePicture === outfit.url ? 'border-orange-500 ring-4 ring-orange-500/10 bg-orange-50' : 'border-gray-100 hover:border-gray-200 bg-gray-50'}`}
+                            >
+                                <img src={outfit.url} alt={outfit.label} className="w-full aspect-square object-cover" />
+                                <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-[7px] py-1 text-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                    {outfit.label}
+                                </div>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
         <div>
             <h1 className="text-2xl font-bold text-gray-900">Mr. Chief Settings</h1>
-            <p className="text-sm text-gray-500">Personalize your cooking assistant.</p>
+            <p className="text-sm text-gray-500">Customize your animated chef avatar.</p>
         </div>
       </div>
 

@@ -18,6 +18,13 @@
         backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 255, 255, 0.5);
       }
+      @keyframes bounce-subtle {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-3px); }
+      }
+      .animate-bounce-subtle {
+        animation: bounce-subtle 2s infinite ease-in-out;
+      }
     </style>
   <script type="importmap">
 {
