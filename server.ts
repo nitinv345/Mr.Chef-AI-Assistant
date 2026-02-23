@@ -13,8 +13,9 @@ async function startServer() {
 
   // MongoDB Connection
   const mongoUri = process.env.MONGO_URI || "mongodb://localhost:27017/mr-chief";
+  const clientOptions = { serverApi: { version: '1' as const, strict: true, deprecationErrors: true } };
   try {
-    await mongoose.connect(mongoUri);
+    await mongoose.connect(mongoUri, clientOptions);
     console.log("Connected to MongoDB");
   } catch (err) {
     console.error("MongoDB connection error:", err);

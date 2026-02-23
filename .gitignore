@@ -10,7 +10,13 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
-*.local
+# Environment variables
+.env
+
+# Temporary test files
+raw-db-test.cjs
+test-db.ts
+test-raw.cjs
 
 # Editor directories and files
 .vscode/*
