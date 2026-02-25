@@ -2,7 +2,7 @@ import { Recipe, UserSettings } from './types';
 
 export const INITIAL_SETTINGS: UserSettings = {
   name: 'Prasad',
-  profilePicture: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Prasad&backgroundColor=ffdfbf&top=shortHair&hairColor=black&facialHair=moustacheMagnum',
+  profilePicture: 'https://res.cloudinary.com/dvkfhijxs/image/upload/v1772007443/images_hbiu5q.jpg', // Default chef portrait
   language: 'English',
   dietType: 'Non-Veg',
   allergies: [],
@@ -40,7 +40,7 @@ export const INITIAL_RECIPES: Recipe[] = [
   {
     id: '2',
     title: 'Hyderabadi Chicken Biryani',
-    image: 'https://images.unsplash.com/photo-1563379091339-03b21bc4a4f8?auto=format&fit=crop&w=800&q=80',
+    image: 'https://res.cloudinary.com/dvkfhijxs/image/upload/v1772007443/images_hbiu5q.jpg',
     videoUrl: 'https://res.cloudinary.com/dvkfhijxs/video/upload/v1771835336/chicken-biryani_zksen3.mp4',
     time: '45 mins',
     difficulty: 'Hard',

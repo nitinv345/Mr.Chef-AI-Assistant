@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Mic, Heart, Bell, Clock } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Recipe, UserSettings } from '../types';
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
 
@@ -12,6 +13,7 @@ interface HomeProps {
 }
 
 const Home: React.FC<HomeProps> = ({ recipes, userSettings, onRecipeClick, onToggleLike, onToggleReminder }) => {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const { isListening, transcript, startListening, setTranscript } = useSpeechRecognition();
   const [filteredRecipes, setFilteredRecipes] = useState<Recipe[]>(recipes);
@@ -83,7 +85,7 @@ const Home: React.FC<HomeProps> = ({ recipes, userSettings, onRecipeClick, onTog
             key={recipe.id} 
             className="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 overflow-hidden transform hover:-translate-y-1"
           >
-            <div className="relative h-48 overflow-hidden cursor-pointer" onClick={() => onRecipeClick(recipe)}>
+            <div className="relative h-48 overflow-hidden cursor-pointer" onClick={() => { onRecipeClick(recipe); navigate('/recipe-detail'); }}>
               <img 
                 src={recipe.image} 
                 alt={recipe.title} 
@@ -108,7 +110,7 @@ const Home: React.FC<HomeProps> = ({ recipes, userSettings, onRecipeClick, onTog
               <div className="flex justify-between items-start mb-2">
                 <h3 
                     className="text-lg font-bold text-gray-800 hover:text-orange-600 transition-colors cursor-pointer"
-                    onClick={() => onRecipeClick(recipe)}
+                    onClick={() => { onRecipeClick(recipe); navigate('/recipe-detail'); }}
                 >
                     {recipe.title}
                 </h3>

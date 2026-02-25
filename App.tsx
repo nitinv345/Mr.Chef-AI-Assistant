@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Home from './views/Home';
 import RecipeDetail from './views/RecipeDetail';
 import RecipeMaker from './views/RecipeMaker';
 import Favorites from './views/Favorites';
 import Settings from './views/Settings';
+import Login from './views/Login';
+import PrivateRoute from './components/PrivateRoute';
 import { ViewState, Recipe, UserSettings } from './types';
 import { INITIAL_RECIPES, INITIAL_SETTINGS } from './constants';
 
 const App: React.FC = () => {
-  const [currentView, setCurrentView] = useState<ViewState>('HOME');
   const [recipes, setRecipes] = useState<Recipe[]>(INITIAL_RECIPES);
   const [userSettings, setUserSettings] = useState<UserSettings>(INITIAL_SETTINGS);
   const [activeRecipe, setActiveRecipe] = useState<Recipe | null>(null);
@@ -60,7 +62,6 @@ const App: React.FC = () => {
 
   const handleRecipeClick = (recipe: Recipe) => {
     setActiveRecipe(recipe);
-    setCurrentView('RECIPE_DETAIL');
   };
 
   const handleToggleLike = async (id: string) => {
@@ -111,41 +112,72 @@ const App: React.FC = () => {
     }
   };
 
-  const renderView = () => {
-    switch (currentView) {
-      case 'HOME':
-        return (
-          <Home 
-            recipes={recipes} 
-            userSettings={userSettings}
-            onRecipeClick={handleRecipeClick}
-            onToggleLike={handleToggleLike}
-            onToggleReminder={handleToggleReminder}
-          />
-        );
-      case 'RECIPE_DETAIL':
-        if (!activeRecipe) return <div onClick={() => setCurrentView('HOME')}>Error: No recipe selected. Click to go home.</div>;
-        return <RecipeDetail recipe={activeRecipe} onBack={() => setCurrentView('HOME')} />;
-      case 'FAVOURITE':
-        return <Favorites recipes={recipes} userSettings={userSettings} onRecipeClick={handleRecipeClick} />;
-      case 'MAKER':
-        return <RecipeMaker userSettings={userSettings} />;
-      case 'SETTINGS':
-        return <Settings settings={userSettings} onSave={setUserSettings} />;
-      default:
-        return <Home recipes={recipes} onRecipeClick={handleRecipeClick} onToggleLike={handleToggleLike} onToggleReminder={handleToggleReminder} />;
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
-      {renderView()}
-      
-      {/* Hide Navbar on Recipe Detail to focus on video/steps, or keep it? Request implies dedicated page. */}
-      {currentView !== 'RECIPE_DETAIL' && (
-        <Navbar currentView={currentView} setView={setCurrentView} />
-      )}
-    </div>
+    <Router>
+      <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          
+          <Route path="/" element={
+            <PrivateRoute>
+              <>
+                <Home 
+                  recipes={recipes} 
+                  userSettings={userSettings}
+                  onRecipeClick={handleRecipeClick}
+                  onToggleLike={handleToggleLike}
+                  onToggleReminder={handleToggleReminder}
+                />
+                <Navbar currentView="HOME" />
+              </>
+            </PrivateRoute>
+          } />
+
+          <Route path="/favourite" element={
+            <PrivateRoute>
+              <>
+                <Favorites 
+                  recipes={recipes} 
+                  userSettings={userSettings} 
+                  onRecipeClick={handleRecipeClick} 
+                />
+                <Navbar currentView="FAVOURITE" />
+              </>
+            </PrivateRoute>
+          } />
+
+          <Route path="/maker" element={
+            <PrivateRoute>
+              <>
+                <RecipeMaker userSettings={userSettings} />
+                <Navbar currentView="MAKER" />
+              </>
+            </PrivateRoute>
+          } />
+
+          <Route path="/settings" element={
+            <PrivateRoute>
+              <>
+                <Settings settings={userSettings} onSave={setUserSettings} />
+                <Navbar currentView="SETTINGS" />
+              </>
+            </PrivateRoute>
+          } />
+
+          <Route path="/recipe-detail" element={
+            <PrivateRoute>
+              {activeRecipe ? (
+                <RecipeDetail recipe={activeRecipe} onBack={() => {}} />
+              ) : (
+                <Navigate to="/" replace />
+              )}
+            </PrivateRoute>
+          } />
+
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </div>
+    </Router>
   );
 };
 

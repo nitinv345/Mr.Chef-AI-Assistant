@@ -21,11 +21,20 @@ export const getRecipes = async () => {
 export const addRecipe = async (recipe: any) => {
   try {
     if (isDbConnected()) {
-      const newRecipe = new RecipeModel(recipe);
-      return await newRecipe.save();
+      // Use findOneAndUpdate with upsert: true to prevent E11000 duplicate key errors
+      return await RecipeModel.findOneAndUpdate(
+        { id: recipe.id },
+        recipe,
+        { upsert: true, new: true, setDefaultsOnInsert: true }
+      );
     }
   } catch (err) {
     console.error("DB Error, using in-memory:", err);
+  }
+  const index = inMemoryRecipes.findIndex(r => r.id === recipe.id);
+  if (index !== -1) {
+    inMemoryRecipes[index] = { ...recipe };
+    return inMemoryRecipes[index];
   }
   const newRecipe = { ...recipe, _id: recipe.id || Date.now().toString() };
   inMemoryRecipes.unshift(newRecipe);

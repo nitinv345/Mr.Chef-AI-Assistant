@@ -1,6 +1,7 @@
 import React from 'react';
 import { Recipe, UserSettings } from '../types';
 import { Play, Heart, Bell } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface FavoritesProps {
   recipes: Recipe[];
@@ -9,6 +10,7 @@ interface FavoritesProps {
 }
 
 const Favorites: React.FC<FavoritesProps> = ({ recipes, userSettings, onRecipeClick }) => {
+  const navigate = useNavigate();
   const favorites = recipes.filter(r => r.isLiked);
 
   if (favorites.length === 0) {
@@ -33,7 +35,7 @@ const Favorites: React.FC<FavoritesProps> = ({ recipes, userSettings, onRecipeCl
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {favorites.map((recipe) => (
           <div key={recipe.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex gap-4 transition-all hover:shadow-md">
-            <div className="relative w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden group cursor-pointer" onClick={() => onRecipeClick(recipe)}>
+            <div className="relative w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden group cursor-pointer" onClick={() => { onRecipeClick(recipe); navigate('/recipe-detail'); }}>
                 <img src={recipe.image} alt={recipe.title} className="w-full h-full object-cover" />
                 <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                     <Play size={20} className="text-white" fill="currentColor" />
@@ -63,7 +65,7 @@ const Favorites: React.FC<FavoritesProps> = ({ recipes, userSettings, onRecipeCl
                     )}
                 </div>
                 <button 
-                    onClick={() => onRecipeClick(recipe)}
+                    onClick={() => { onRecipeClick(recipe); navigate('/recipe-detail'); }}
                     className="text-xs text-orange-600 font-medium mt-3 hover:underline text-left"
                 >
                     Watch & Cook &rarr;

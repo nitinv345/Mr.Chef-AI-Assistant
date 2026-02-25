@@ -1,25 +1,30 @@
 import React, { useState } from 'react';
 import { UserSettings } from '../types';
-import { Save, User, Utensils, Clock, AlertTriangle } from 'lucide-react';
+import { Save, User, Utensils, Clock, AlertTriangle, Upload } from 'lucide-react';
 
 interface SettingsProps {
   settings: UserSettings;
   onSave: (newSettings: UserSettings) => void;
 }
 
-const CHEF_OUTFITS = [
-  { id: 'prasad', url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Prasad&backgroundColor=ffdfbf&top=shortHair&hairColor=black&facialHair=moustacheMagnum', label: 'Prasad' },
-  { id: 'nitin', url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Nitin&backgroundColor=c0aede&top=shortHair&hairColor=black&facialHair=beardLight', label: 'Nitin' },
-  { id: 'sarthak', url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarthak&backgroundColor=b6e3f4&top=shortHair&hairColor=black', label: 'Sarthak' },
-  { id: 'rinu', url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Rinu&backgroundColor=ffdfbf&top=longHair&hairColor=black', label: 'Rinu' },
-  { id: 'minu', url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Minu&backgroundColor=c0aede&top=longHair&hairColor=black', label: 'Minu' },
-  { id: 'siddhi', url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Siddhi&backgroundColor=b6e3f4&top=longHair&hairColor=black', label: 'Siddhi' },
-];
 
 const Settings: React.FC<SettingsProps> = ({ settings, onSave }) => {
   const [formData, setFormData] = useState<UserSettings>(settings);
   const [isSaved, setIsSaved] = useState(false);
   const [showDpDropdown, setShowDpDropdown] = useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        handleChange('profilePicture', reader.result as string);
+        setShowDpDropdown(false);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleChange = (field: keyof UserSettings, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -53,34 +58,37 @@ const Settings: React.FC<SettingsProps> = ({ settings, onSave }) => {
             </div>
             
             {showDpDropdown && (
-                <div className="absolute top-full left-0 mt-2 w-72 bg-white rounded-2xl shadow-2xl border border-gray-100 p-4 z-50 animate-in fade-in slide-in-from-top-4">
+                <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-2xl shadow-2xl border border-gray-100 p-4 z-50 animate-in fade-in slide-in-from-top-4">
                     <div className="text-xs font-bold text-gray-400 uppercase mb-4 px-1 flex justify-between items-center">
-                        <span>Choose Your Avatar</span>
-                        <button onClick={() => setShowDpDropdown(false)} className="text-gray-300 hover:text-gray-500">×</button>
+                        <span>Profile Picture</span>
+                        <button onClick={() => setShowDpDropdown(false)} className="text-gray-300 hover:text-gray-500 text-xl font-bold">×</button>
                     </div>
-                    <div className="grid grid-cols-3 gap-3">
-                        {CHEF_OUTFITS.map(outfit => (
-                            <button 
-                                key={outfit.id}
-                                onClick={() => {
-                                    handleChange('profilePicture', outfit.url);
-                                    setShowDpDropdown(false);
-                                }}
-                                className={`group relative rounded-xl overflow-hidden border-2 transition-all hover:scale-105 ${formData.profilePicture === outfit.url ? 'border-orange-500 ring-4 ring-orange-500/10 bg-orange-50' : 'border-gray-100 hover:border-gray-200 bg-gray-50'}`}
-                            >
-                                <img src={outfit.url} alt={outfit.label} className="w-full aspect-square object-cover" />
-                                <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-[7px] py-1 text-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                    {outfit.label}
-                                </div>
-                            </button>
-                        ))}
+
+                    <div className="space-y-3">
+                        <input 
+                            type="file" 
+                            ref={fileInputRef}
+                            onChange={handleImageUpload}
+                            accept="image/*"
+                            className="hidden"
+                        />
+                        <button 
+                            onClick={() => fileInputRef.current?.click()}
+                            className="w-full flex items-center justify-center gap-2 py-4 px-4 bg-orange-50 hover:bg-orange-100 text-orange-600 rounded-xl text-xs font-bold transition-all border-2 border-dashed border-orange-200 hover:border-orange-400 group/btn"
+                        >
+                            <Upload size={18} className="group-hover/btn:scale-110 transition-transform" />
+                            <span>Upload Custom Portrait</span>
+                        </button>
+                        <p className="text-[10px] text-gray-400 text-center px-2 italic">
+                            Choose a high-quality image from your device to personalize your chef profile.
+                        </p>
                     </div>
                 </div>
             )}
         </div>
         <div>
-            <h1 className="text-2xl font-bold text-gray-900">Mr. Chief Settings</h1>
-            <p className="text-sm text-gray-500">Customize your animated chef avatar.</p>
+            <h1 className="text-2xl font-bold text-gray-900">Mr. Chef Settings</h1>
+            <p className="text-sm text-gray-500">Profile & culinary preferences.</p>
         </div>
       </div>
 
