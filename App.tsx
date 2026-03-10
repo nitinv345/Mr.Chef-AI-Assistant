@@ -49,14 +49,34 @@ const App: React.FC = () => {
       }
     };
 
-    const savedSettings = localStorage.getItem('the_chief_settings');
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        // Only override if user object has the settings fields
+        if (user.name) {
+          setUserSettings({
+            name: user.name,
+            profilePicture: user.profilePicture,
+            language: user.language || 'English',
+            dietType: user.dietType,
+            allergies: user.allergies || [],
+            cuisinePreferences: user.cuisinePreferences,
+            skillLevel: user.skillLevel,
+            notifications: user.notifications
+          });
+        }
+      } catch (e) {
+        console.error("Failed to parse user from localStorage", e);
+      }
+    }
     
     fetchRecipes();
-    if (savedSettings) setUserSettings(JSON.parse(savedSettings));
   }, []);
 
-  // Save persistence (Settings still in localStorage for now, recipes in DB)
+  // Sync settings (Used for immediate UI state, actual persistence happens in Settings.tsx handleSave)
   useEffect(() => {
+    // We can still keep this for non-authenticated fallback if needed, but let's focus on DB
     localStorage.setItem('the_chief_settings', JSON.stringify(userSettings));
   }, [userSettings]);
 

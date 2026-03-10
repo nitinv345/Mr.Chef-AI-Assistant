@@ -12,6 +12,34 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true
+  },
+  name: {
+    type: String,
+    default: 'Prasad'
+  },
+  profilePicture: {
+    type: String,
+    default: 'https://res.cloudinary.com/dvkfhijxs/image/upload/v1772007443/images_hbiu5q.jpg'
+  },
+  language: {
+    type: String,
+    default: 'English'
+  },
+  dietType: {
+    type: String,
+    default: 'Non-Veg'
+  },
+  skillLevel: {
+    type: String,
+    default: 'Intermediate'
+  },
+  cuisinePreferences: {
+    type: [String],
+    default: ['Indian']
+  },
+  notifications: {
+    type: Boolean,
+    default: true
   }
 }, { timestamps: true });
 

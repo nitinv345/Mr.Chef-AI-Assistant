@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { UserSettings } from '../types';
-import { Save, User, Utensils, Clock, AlertTriangle, Upload } from 'lucide-react';
+import { Save, User, Utensils, Clock, AlertTriangle, Upload, AlertCircle } from 'lucide-react';
+import axios from 'axios';
 
 interface SettingsProps {
   settings: UserSettings;
@@ -11,6 +12,7 @@ interface SettingsProps {
 const Settings: React.FC<SettingsProps> = ({ settings, onSave }) => {
   const [formData, setFormData] = useState<UserSettings>(settings);
   const [isSaved, setIsSaved] = useState(false);
+  const [error, setError] = useState('');
   const [showDpDropdown, setShowDpDropdown] = useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
@@ -40,10 +42,37 @@ const Settings: React.FC<SettingsProps> = ({ settings, onSave }) => {
     }
   };
 
-  const handleSave = () => {
-    onSave(formData);
-    setIsSaved(true);
-    setTimeout(() => setIsSaved(false), 3000);
+  const handleSave = async () => {
+    try {
+      const userStr = localStorage.getItem('user');
+      if (!userStr) {
+        setError('User session not found. Please log in again.');
+        return;
+      }
+      
+      const user = JSON.parse(userStr);
+      const userId = user._id || user.id;
+
+      if (!userId) {
+        setError('User ID not found in session.');
+        return;
+      }
+
+      await axios.patch(`/api/users/${userId}`, formData);
+      
+      onSave(formData);
+      
+      // Update local storage user object with new settings
+      const updatedUser = { ...user, ...formData };
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      
+      setIsSaved(true);
+      setTimeout(() => setIsSaved(false), 3000);
+      setError('');
+    } catch (err: any) {
+      console.error('Failed to save settings:', err);
+      setError(err.response?.data?.message || 'Failed to save settings. Please try again.');
+    }
   };
 
   return (
@@ -200,6 +229,13 @@ const Settings: React.FC<SettingsProps> = ({ settings, onSave }) => {
                 </div>
             </div>
         </div>
+
+        {error && (
+          <div className="bg-red-50 p-4 border-t border-red-100 flex items-center gap-3 text-red-600 text-sm">
+            <AlertCircle size={18} />
+            <span>{error}</span>
+          </div>
+        )}
 
         {/* Action Bar */}
         <div className="bg-gray-50 px-6 py-4 flex justify-between items-center">

@@ -23,11 +23,14 @@ router.post('/signup', async (req, res) => {
     await user.save();
     console.log(`Signup success for: ${email}`);
 
-    const token = jwt.sign({ id: user._id }, getJwtSecret(), { expiresIn: '1d' });
-    res.status(201).json({ token, user: { id: user._id, email: user.email } });
-  } catch (error) {
+    const userObj = user.toObject();
+    delete (userObj as any).password;
+
+    const token = jwt.sign({ id: user._id.toString() }, getJwtSecret(), { expiresIn: '1d' });
+    res.status(201).json({ token, user: userObj });
+  } catch (error: any) {
     console.error('Signup error:', error);
-    res.status(500).json({ message: 'Server error during signup' });
+    res.status(500).json({ message: error.message || 'Server error during signup' });
   }
 });
 
@@ -40,21 +43,25 @@ router.post('/login', async (req, res) => {
     const user: any = await User.findOne({ email });
     if (!user) {
       console.log(`Login failed: User not found for ${email}`);
-      return res.status(400).json({ message: 'User not found' });
+      return res.status(401).json({ message: 'User not found' });
     }
 
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
       console.log(`Login failed: Invalid password for ${email}`);
-      return res.status(400).json({ message: 'Invalid credentials' });
+      return res.status(401).json({ message: 'Invalid credentials' });
     }
 
     console.log(`Login success for: ${email}`);
-    const token = jwt.sign({ id: user._id }, getJwtSecret(), { expiresIn: '1d' });
-    res.json({ token, user: { id: user._id, email: user.email } });
-  } catch (error) {
+    
+    const userObj = user.toObject();
+    delete userObj.password;
+
+    const token = jwt.sign({ id: user._id.toString() }, getJwtSecret(), { expiresIn: '1d' });
+    res.json({ token, user: userObj });
+  } catch (error: any) {
     console.error('Login error:', error);
-    res.status(500).json({ message: 'Server error during login' });
+    res.status(500).json({ message: error.message || 'Server error during login' });
   }
 });
 

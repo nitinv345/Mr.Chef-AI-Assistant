@@ -7,6 +7,7 @@ import mongoose from "mongoose";
 import cors from "cors";
 import recipeRoutes from "./server/routes/recipeRoutes";
 import authRoutes from "./server/routes/authRoutes";
+import userRoutes from "./server/routes/userRoutes";
 
 async function startServer() {
   const app = express();
@@ -43,6 +44,7 @@ async function startServer() {
   // API Routes
   app.use("/api/recipes", recipeRoutes);
   app.use("/api/auth", authRoutes);
+  app.use("/api/users", userRoutes);
 
   app.get("/api/health", (req, res) => {
     res.json({ status: "ok" });

@@ -23,12 +23,24 @@ const Login: React.FC = () => {
     try {
       const res = await axios.post(endpoint, { email: sanitizedEmail, password });
       
-      localStorage.setItem('token', res.data.token);
-      localStorage.setItem('user', JSON.stringify(res.data.user));
+      const { token, user } = res.data;
+      
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
       
       navigate('/');
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Something went wrong. Please try again.');
+      console.error(`${isSignup ? 'Signup' : 'Login'} error:`, err);
+      
+      if (err.response) {
+        // Server responded with a bias
+        setError(err.response.data?.message || `Server error: ${err.response.status}`);
+      } else if (err.request) {
+        // Request made but no response
+        setError('Cannot connect to server. Please check your internet connection and try again.');
+      } else {
+        setError(err.message || 'Something went wrong. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
