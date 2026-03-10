@@ -16,6 +16,8 @@ dist-ssr
 # Temporary test files
 raw-db-test.cjs
 test-db.ts
+test-simple.ts
+remove-recipe.ts
 test-raw.cjs
 
 # Editor directories and files

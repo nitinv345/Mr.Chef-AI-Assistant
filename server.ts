@@ -18,17 +18,22 @@ async function startServer() {
 
   try {
     mongoose.set('strictQuery', false);
-    console.log("Connecting to MongoDB Atlas with Stable API...");
+    console.log("Connecting to MongoDB Atlas...");
+    if (!mongoUri) {
+      throw new Error("MONGO_URI is not defined in environment variables");
+    }
     await mongoose.connect(mongoUri, clientOptions);
     
     // Ping the deployment to confirm connection
     if (mongoose.connection.db) {
       await mongoose.connection.db.admin().command({ ping: 1 });
-      console.log("Pinged your deployment. You successfully connected to MongoDB!");
+      console.log("✅ Successfully connected to MongoDB Atlas!");
+    } else {
+      throw new Error("Mongoose connection established but database object is undefined");
     }
   } catch (err: any) {
-    console.error("CRITICAL: MongoDB connection error details:");
-    console.error(err);
+    console.error("❌ CRITICAL: MongoDB connection error:");
+    console.error(err.message || err);
     process.exit(1);
   }
 
