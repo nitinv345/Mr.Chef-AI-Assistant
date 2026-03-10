@@ -60,20 +60,37 @@ async function startServer() {
       console.error("❌ MongoDB connection error:", err.message);
     });
 
+  // API 404 Handler (This will catch any /api/* requests that didn't match)
+  app.use("/api/*", (req, res) => {
+    res.status(404).json({ error: `API route not found: ${req.method} ${req.originalUrl}` });
+  });
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
+    console.log("🛠 Running in DEVELOPMENT mode");
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa",
     });
     app.use(vite.middlewares);
   } else {
+    console.log("🚀 Running in PRODUCTION mode");
     // Serve static files in production
     app.use(express.static("dist"));
     app.use((req, res) => {
-      res.sendFile("dist/index.html", { root: "." });
+      res.sendFile("dist/index.html", { root: "." }, (err) => {
+        if (err) {
+          res.status(404).json({ error: "index.html not found. Did you run 'npm run build'?" });
+        }
+      });
     });
   }
+
+  // Global Error Handler
+  app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    console.error("💥 Global Error Handler:", err);
+    res.status(500).json({ error: "Internal Server Error", details: err.message });
+  });
 }
 
 startServer();
