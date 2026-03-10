@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import API_BASE_URL from '../apiConfig';
 import { useNavigate } from 'react-router-dom';
 import { LogIn, UserPlus, AlertCircle, Loader2, Eye, EyeOff, UtensilsCrossed } from 'lucide-react';
 
@@ -18,7 +19,7 @@ const Login: React.FC = () => {
     setLoading(true);
 
     const sanitizedEmail = email.trim().toLowerCase();
-    const endpoint = isSignup ? '/api/auth/signup' : '/api/auth/login';
+    const endpoint = isSignup ? `${API_BASE_URL}/api/auth/signup` : `${API_BASE_URL}/api/auth/login`;
 
     try {
       const res = await axios.post(endpoint, { email: sanitizedEmail, password });

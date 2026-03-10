@@ -10,6 +10,7 @@ import Login from './views/Login';
 import PrivateRoute from './components/PrivateRoute';
 import { ViewState, Recipe, UserSettings } from './types';
 import { INITIAL_RECIPES, INITIAL_SETTINGS } from './constants';
+import API_BASE_URL from './apiConfig';
 
 const App: React.FC = () => {
   const [recipes, setRecipes] = useState<Recipe[]>(INITIAL_RECIPES);
@@ -20,7 +21,7 @@ const App: React.FC = () => {
   useEffect(() => {
     const fetchRecipes = async () => {
       try {
-        const response = await fetch('/api/recipes');
+        const response = await fetch(`${API_BASE_URL}/api/recipes`);
         if (response.ok) {
           const data = await response.json();
           if (data.length > 0) {
@@ -28,7 +29,7 @@ const App: React.FC = () => {
           } else {
             // Seed initial recipes if DB is empty
             const seedPromises = INITIAL_RECIPES.map(recipe => 
-              fetch('/api/recipes', {
+              fetch(`${API_BASE_URL}/api/recipes`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(recipe)
@@ -37,7 +38,7 @@ const App: React.FC = () => {
             await Promise.all(seedPromises);
             
             // Re-fetch to confirm
-            const retryResponse = await fetch('/api/recipes');
+            const retryResponse = await fetch(`${API_BASE_URL}/api/recipes`);
             if (retryResponse.ok) {
               const retryData = await retryResponse.json();
               setRecipes(retryData.length > 0 ? retryData : INITIAL_RECIPES);
@@ -98,7 +99,7 @@ const App: React.FC = () => {
     }));
 
     try {
-      await fetch(`/api/recipes/${id}`, {
+      await fetch(`${API_BASE_URL}/api/recipes/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ isLiked: updatedStatus })
@@ -122,7 +123,7 @@ const App: React.FC = () => {
     }));
 
     try {
-      await fetch(`/api/recipes/${id}`, {
+      await fetch(`${API_BASE_URL}/api/recipes/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ hasReminder: updatedStatus })

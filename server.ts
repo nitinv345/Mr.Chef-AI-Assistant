@@ -13,7 +13,13 @@ async function startServer() {
   const app = express();
   const PORT = process.env.PORT || 3000;
 
-  app.use(cors());
+  app.use(cors({
+    origin: [
+      "http://localhost:5173",
+      "https://mr-chef-ai-assistant.vercel.app" // Placeholder, user should update with their actual Vercel URL
+    ],
+    credentials: true
+  }));
   app.use(express.json());
 
   // Root Route

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { UserSettings } from '../types';
 import { Save, User, Utensils, Clock, AlertTriangle, Upload, AlertCircle } from 'lucide-react';
 import axios from 'axios';
+import API_BASE_URL from '../apiConfig';
 
 interface SettingsProps {
   settings: UserSettings;
@@ -58,7 +59,7 @@ const Settings: React.FC<SettingsProps> = ({ settings, onSave }) => {
         return;
       }
 
-      await axios.patch(`/api/users/${userId}`, formData);
+      await axios.patch(`${API_BASE_URL}/api/users/${userId}`, formData);
       
       onSave(formData);
       

@@ -4,6 +4,7 @@ import { UserSettings, Recipe } from '../types';
 import { VEG_INGREDIENTS, SPICES, MEATS } from '../constants';
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
 import { generateRecipeFromIngredients, translateRecipe } from '../services/geminiService';
+import API_BASE_URL from '../apiConfig';
 
 
 interface RecipeMakerProps {
@@ -115,7 +116,7 @@ const RecipeMaker: React.FC<RecipeMakerProps> = ({ userSettings }) => {
         };
 
         try {
-            const response = await fetch('/api/recipes', {
+            const response = await fetch(`${API_BASE_URL}/api/recipes`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newRecipe)
