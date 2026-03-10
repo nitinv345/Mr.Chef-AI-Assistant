@@ -64,7 +64,7 @@ async function startServer() {
   } else {
     // Serve static files in production
     app.use(express.static("dist"));
-    app.get("/*", (req, res) => {
+    app.use((req, res) => {
       res.sendFile("dist/index.html", { root: "." });
     });
   }
