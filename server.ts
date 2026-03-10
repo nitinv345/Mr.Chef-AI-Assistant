@@ -13,33 +13,13 @@ async function startServer() {
   const app = express();
   const PORT = process.env.PORT || 3000;
 
-  // MongoDB Connection
-  const mongoUri = process.env.MONGO_URI || "mongodb://localhost:27017/mr_chef";
-  const clientOptions = { serverApi: { version: '1' as const, strict: true, deprecationErrors: true } };
-
-  try {
-    mongoose.set('strictQuery', false);
-    console.log("Connecting to MongoDB Atlas...");
-    if (!mongoUri) {
-      throw new Error("MONGO_URI is not defined in environment variables");
-    }
-    await mongoose.connect(mongoUri, clientOptions);
-    
-    // Ping the deployment to confirm connection
-    if (mongoose.connection.db) {
-      await mongoose.connection.db.admin().command({ ping: 1 });
-      console.log("✅ Successfully connected to MongoDB Atlas!");
-    } else {
-      throw new Error("Mongoose connection established but database object is undefined");
-    }
-  } catch (err: any) {
-    console.error("❌ CRITICAL: MongoDB connection error:");
-    console.error(err.message || err);
-    process.exit(1);
-  }
-
   app.use(cors());
   app.use(express.json());
+
+  // Root Route
+  app.get("/", (req, res) => {
+    res.send("Mr Chef AI API running");
+  });
 
   // API Routes
   app.use("/api/recipes", recipeRoutes);
@@ -49,6 +29,30 @@ async function startServer() {
   app.get("/api/health", (req, res) => {
     res.json({ status: "ok" });
   });
+
+  // Bind to port immediately for Render
+  app.listen(PORT, "0.0.0.0", () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+
+  // MongoDB Connection (Asynchronous)
+  const mongoUri = process.env.MONGO_URI || "mongodb://localhost:27017/mr_chef";
+  const clientOptions = { serverApi: { version: '1' as const, strict: true, deprecationErrors: true } };
+
+  mongoose.set('strictQuery', false);
+  console.log("Connecting to MongoDB Atlas...");
+  
+  mongoose.connect(mongoUri, clientOptions)
+    .then(async () => {
+      console.log("✅ MongoDB Connected");
+      if (mongoose.connection.db) {
+        await mongoose.connection.db.admin().command({ ping: 1 });
+        console.log("Ping successful!");
+      }
+    })
+    .catch(err => {
+      console.error("❌ MongoDB connection error:", err.message);
+    });
 
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
@@ -64,10 +68,6 @@ async function startServer() {
       res.sendFile("dist/index.html", { root: "." });
     });
   }
-
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-  });
 }
 
 startServer();
