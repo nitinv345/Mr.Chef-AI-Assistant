@@ -11,7 +11,7 @@ import userRoutes from "./server/routes/userRoutes";
 
 async function startServer() {
   const app = express();
-  const PORT = 3000;
+  const PORT = process.env.PORT || 3000;
 
   // MongoDB Connection
   const mongoUri = process.env.MONGO_URI || "mongodb://localhost:27017/mr_chef";
