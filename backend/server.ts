@@ -1,12 +1,13 @@
 import dotenv from "dotenv";
-dotenv.config();
+import path from "path";
+dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
-import recipeRoutes from "./routes/recipeRoutes.js";
-import authRoutes from "./routes/authRoutes.js";
-import userRoutes from "./routes/userRoutes.js";
+import recipeRoutes from "./routes/recipeRoutes";
+import authRoutes from "./routes/authRoutes";
+import userRoutes from "./routes/userRoutes";
 
 async function startServer() {
   const app = express();

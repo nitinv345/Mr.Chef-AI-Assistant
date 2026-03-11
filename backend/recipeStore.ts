@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import RecipeModel from './models/Recipe.js';
+import RecipeModel from './models/Recipe';
 
 // Minimal Recipe type (duplicated here to avoid frontend dependency)
 interface Recipe {
