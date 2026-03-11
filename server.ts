@@ -5,21 +5,36 @@ import express from "express";
 import { createServer as createViteServer } from "vite";
 import mongoose from "mongoose";
 import cors from "cors";
+import path from "path";
 import recipeRoutes from "./server/routes/recipeRoutes";
 import authRoutes from "./server/routes/authRoutes";
 import userRoutes from "./server/routes/userRoutes";
 
 async function startServer() {
   const app = express();
-  const PORT = process.env.PORT || 3000;
+  const PORT = 3000;
 
-  app.use(cors({
-    origin: [
-      "http://localhost:5173",
-      "https://mr-chef-ai-assistant.vercel.app" // Placeholder, user should update with their actual Vercel URL
-    ],
-    credentials: true
-  }));
+  // MongoDB Connection
+  const mongoUri = process.env.MONGO_URI || "mongodb://localhost:27017/mr_chef";
+  const clientOptions = { serverApi: { version: '1' as const, strict: true, deprecationErrors: true } };
+
+  try {
+    mongoose.set('strictQuery', false);
+    console.log("Connecting to MongoDB Atlas with Stable API...");
+    await mongoose.connect(mongoUri, clientOptions);
+    
+    // Ping the deployment to confirm connection
+    if (mongoose.connection.db) {
+      await mongoose.connection.db.admin().command({ ping: 1 });
+      console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    }
+  } catch (err: any) {
+    console.error("CRITICAL: MongoDB connection error details:");
+    console.error(err);
+    process.exit(1);
+  }
+
+  app.use(cors());
   app.use(express.json());
 
   // Root Route
@@ -77,19 +92,13 @@ async function startServer() {
     console.log("🚀 Running in PRODUCTION mode");
     // Serve static files in production
     app.use(express.static("dist"));
-    app.use((req, res) => {
-      res.sendFile("dist/index.html", { root: "." }, (err) => {
-        if (err) {
-          res.status(404).json({ error: "index.html not found. Did you run 'npm run build'?" });
-        }
-      });
+    app.get("*", (req, res) => {
+      res.sendFile("dist/index.html", { root: "." });
     });
   }
 
-  // Global Error Handler
-  app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-    console.error("💥 Global Error Handler:", err);
-    res.status(500).json({ error: "Internal Server Error", details: err.message });
+  app.listen(PORT, "0.0.0.0", () => {
+    console.log(`Server running on http://localhost:${PORT}`);
   });
 }
 

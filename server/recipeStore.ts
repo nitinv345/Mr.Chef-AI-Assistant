@@ -10,7 +10,13 @@ const isDbConnected = () => mongoose.connection.readyState === 1;
 export const getRecipes = async () => {
   try {
     if (isDbConnected()) {
-      return await RecipeModel.find().sort({ createdAt: -1 });
+      const recipes = await RecipeModel.find().sort({ createdAt: -1 });
+      if (recipes.length === 0) {
+        console.log("Database is empty. Seeding initial recipes...");
+        await RecipeModel.insertMany(INITIAL_RECIPES);
+        return await RecipeModel.find().sort({ createdAt: -1 });
+      }
+      return recipes;
     }
   } catch (err) {
     console.error("DB Error, falling back to in-memory:", err);
