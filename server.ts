@@ -67,9 +67,9 @@ async function startServer() {
     console.log("🚀 Running in PRODUCTION mode");
     // Serve static files in production
     app.use(express.static("dist"));
-    app.get("*", (req, res) => {
-      res.sendFile(path.resolve("dist/index.html"));
-    });
+    app.get(/.*/, (req, res) => {
+  res.sendFile(path.resolve("dist/index.html"));
+});
   }
 
   app.listen(PORT, "0.0.0.0", () => {
