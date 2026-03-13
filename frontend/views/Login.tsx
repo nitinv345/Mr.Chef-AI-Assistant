@@ -184,44 +184,6 @@ const Login: React.FC = () => {
           <span className="w-10 h-[1px] bg-slate-800" />
         </p>
       </div>
-
-      <style>{`
-        @keyframes blob {
-          0% { transform: translate(0px, 0px) scale(1); }
-          33% { transform: translate(30px, -50px) scale(1.1); }
-          66% { transform: translate(-20px, 20px) scale(0.9); }
-          100% { transform: translate(0px, 0px) scale(1); }
-        }
-        .animate-blob {
-          animation: blob 7s infinite alternate ease-in-out;
-        }
-        .animation-delay-2000 { animation-delay: 2s; }
-        .animation-delay-4000 { animation-delay: 4s; }
-        
-        @keyframes shake {
-          0%, 100% { transform: translateX(0); }
-          25% { transform: translateX(-5px); }
-          75% { transform: translateX(5px); }
-        }
-        .animate-shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
-        
-        @keyframes gradient-xy {
-          0%, 100% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-        }
-        .animate-gradient-xy {
-          background-size: 200% 200%;
-          animation: gradient-xy 3s ease infinite;
-        }
-        
-        input:-webkit-autofill,
-        input:-webkit-autofill:hover, 
-        input:-webkit-autofill:focus {
-          -webkit-text-fill-color: white;
-          -webkit-box-shadow: 0 0 0px 1000px #020617 inset;
-          transition: background-color 5000s ease-in-out 0s;
-        }
-      `}</style>
     </div>
   );
 };
